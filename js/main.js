@@ -4,7 +4,8 @@ enchant();   //start enchant.js
 window.onload = function() {
     
     var game = new Game(500,440);         //starting point  //instance of Game class
-    game.preload('res/water.png');
+    game.preload('res/water.png',
+                'res/penguinSheet.png');
 
     //game settings
     game.fps= 30;                //frames per sec
@@ -23,7 +24,7 @@ window.onload = function() {
 var SceneGame = Class.create(Scene,{
     initialize: function(){
 
-        var scene,bg,label;
+        var game,bg,penguin;
         
         Scene.apply(this);  //Call superclass constructor
 
@@ -33,6 +34,12 @@ var SceneGame = Class.create(Scene,{
         bg = new Sprite(500,440);       //(width,height)
         bg.image = game.assets['res/water.png'];
 
+        //add Penguin
+        penguin= new Sprite(30,43);
+        penguin.image = game.assets['res/penguinSheet.png'];
+        penguin.x = game.width/2 - penguin.width/2;
+        penguin.y = 280;
+        
         //adding items
         this.addChild(bg);             //addChild method means that the node you add will become one of the scene’s child nodes.
         //this variable refers to the current instance of SceneGame     
