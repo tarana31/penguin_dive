@@ -47,7 +47,7 @@ var SceneGame = Class.create(Scene,{
         bg.image = game.assets['res/water.png'];
 
         //add Penguin
-        penguin= new Penguin;
+        penguin= new Penguin();
         penguin.x = game.width/2 - penguin.width/2;                     //set penguin position
         penguin.y = 280;
         this.penguin = penguin;
@@ -85,18 +85,20 @@ var SceneGame = Class.create(Scene,{
 
         // Score increase as time passes
         this.scoreTimer += evt.elapsed * 0.001;
-        if (this.scoreTimer >= 0.5) {
+        if (this.scoreTimer >= 0.5) 
+        {
             this.setScore(this.score + 1);
             this.scoreTimer -= 0.5;
         }
 
         // Check if it's time to create a new set of obstacles
         this.generateIceTimer += evt.elapsed * 0.001;
-        if (this.generateIceTimer >= 0.5) {
+        if (this.generateIceTimer >= 0.5) 
+        {
             var ice;
             this.generateIceTimer -= 0.5;
             ice = new Ice(Math.floor(Math.random()*3));
-            this.addChild(ice);
+            this.iceGroup.addChild(ice);
         }
 
         // Check collision
@@ -106,8 +108,10 @@ var SceneGame = Class.create(Scene,{
             var ice;
             ice = this.iceGroup.childNodes[i];
             if (ice.intersect(this.penguin)){
+                var game;
+                game = Game.instance;
                 this.iceGroup.removeChild(ice);        
-                this.bgm.stop();
+                // this.bgm.stop();
 	            game.replaceScene(new SceneGameOver(this.score));        
                 break;
             }
@@ -136,7 +140,8 @@ var SceneGame = Class.create(Scene,{
         this.animationDuration += evt.elapsed * 0.001;     //The elapsed property stores time in milliseconds. 
         //  You can convert it to seconds by multiplying by 0.001. You’ll use the animationDuration variable to keep track of how much time has passed in seconds.  
         
-        if (this.animationDuration >= 0.25) {           //tells the penguin to flap his wings every 0.25 seconds.
+        if (this.animationDuration >= 0.25) 
+        {                                               //tells the penguin to flap his wings every 0.25 seconds.
             this.frame = (this.frame + 1) % 2;
             this.animationDuration -= 0.25;
         }
@@ -180,11 +185,11 @@ var Ice = Class.create(Sprite, {
         
         this.y += ySpeed * evt.elapsed * 0.001;
         this.rotation += this.rotationSpeed * evt.elapsed * 0.001;           
-        if (this.y > game.height) {
+        if (this.y > game.height) 
+        {
             this.parentNode.removeChild(this);        
         }
-    }
-    
+    }    
 });
 
 // SceneGameOver  
