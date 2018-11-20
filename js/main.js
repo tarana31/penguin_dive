@@ -5,7 +5,8 @@ window.onload = function() {
     
     var game = new Game(340,440);         //starting point  //instance of Game class
     game.preload('res/water.png',
-                'res/penguinSheet.png');
+                'res/penguinSheet.png',
+                'res/Ice.png');
 
     //game settings
     game.fps= 30;                //frames per sec
@@ -24,7 +25,7 @@ window.onload = function() {
 var SceneGame = Class.create(Scene,{
     initialize: function(){
 
-        var game,bg,penguin;
+        var game,bg,penguin,iceGroup,label;
         
         Scene.apply(this);  //Call superclass constructor
 
@@ -40,12 +41,20 @@ var SceneGame = Class.create(Scene,{
         penguin.y = 280;
         this.penguin = penguin;
         
+        // add Ice group
+        iceGroup = new Group();
+        this.iceGroup = iceGroup;
+        
         //adding items
         this.addChild(bg);             //addChild method means that the node you add will become one of the scene’s child nodes.
         //this variable refers to the current instance of SceneGame     
         this.addChild(penguin);
         
         this.addEventListener(Event.TOUCH_START,this.handleTouchControl);   // touch listener to move penguin on screen touch
+        this.addEventListener(Event.ENTER_FRAME, this.update);      //update
+
+        //instance variables
+        this.generateIceTimer = 0;
 
     },
 
@@ -55,6 +64,17 @@ var SceneGame = Class.create(Scene,{
         lane = Math.floor(evt.x/laneWidth);
         lane = Math.max(Math.min(2,lane),0);
         this.penguin.switchToLaneNumber(lane);
+    },
+
+    update: function(evt) {
+        // Check if it's time to create a new set of obstacles
+        this.generateIceTimer += evt.elapsed * 0.001;
+        if (this.generateIceTimer >= 0.5) {
+            var ice;
+            this.generateIceTimer -= 0.5;
+            ice = new Ice(Math.floor(Math.random()*3));
+            this.addChild(ice);
+        }
     }
 });
 
@@ -84,4 +104,43 @@ var SceneGame = Class.create(Scene,{
         var targetX = 160 - this.width/2 + (lane-1)*90;
         this.x = targetX;
     }
+});
+
+// Ice
+var Ice = Class.create(Sprite, {
+    // The obstacle that the penguin must avoid
+    initialize: function(lane) {
+        
+        Sprite.apply(this,[48, 49]);    // Call superclass constructor
+        this.image  = Game.instance.assets['res/Ice.png'];      
+        this.rotationSpeed = 0;
+        this.setLane(lane);
+        this.addEventListener(Event.ENTER_FRAME, this.update);
+    },
+
+    setLane: function(lane) {
+        var game, distance;
+        game = Game.instance;        
+        distance = 90;
+    
+        this.rotationSpeed = Math.random() * 100 - 50;
+    
+        this.x = game.width/2 - this.width/2 + (lane - 1) * distance;
+        this.y = -this.height;    
+        this.rotation = Math.floor( Math.random() * 360 );    
+    },
+
+    update: function(evt) { 
+        var ySpeed, game;
+    
+        game = Game.instance;
+        ySpeed = 300;
+        
+        this.y += ySpeed * evt.elapsed * 0.001;
+        this.rotation += this.rotationSpeed * evt.elapsed * 0.001;           
+        if (this.y > game.height) {
+            this.parentNode.removeChild(this);        
+        }
+    }
+    
 });
