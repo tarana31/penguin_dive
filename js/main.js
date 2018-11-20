@@ -107,6 +107,8 @@ var SceneGame = Class.create(Scene,{
             ice = this.iceGroup.childNodes[i];
             if (ice.intersect(this.penguin)){
                 this.iceGroup.removeChild(ice);        
+                this.bgm.stop();
+	            game.replaceScene(new SceneGameOver(this.score));        
                 break;
             }
         }
@@ -181,6 +183,43 @@ var Ice = Class.create(Sprite, {
         if (this.y > game.height) {
             this.parentNode.removeChild(this);        
         }
+    }
+    
+});
+
+// SceneGameOver  
+var SceneGameOver = Class.create(Scene, {
+    initialize: function(score) {
+        var gameOverLabel, scoreLabel;
+        Scene.apply(this);
+        this.backgroundColor = 'red';
+
+        gameOverLabel = new Label("GAME OVER<br>Tap to Restart");
+        gameOverLabel.x = 8;
+        gameOverLabel.y = 128;
+        gameOverLabel.color = 'white';
+        gameOverLabel.font = '32px strong';
+        gameOverLabel.textAlign = 'center';
+
+        // Score label
+        scoreLabel = new Label('SCORE<br>' + score);
+        scoreLabel.x = 9;
+        scoreLabel.y = 32;        
+        scoreLabel.color = 'white';
+        scoreLabel.font = '16px strong';
+        scoreLabel.textAlign = 'center';        
+
+        // Adding labels
+        this.addChild(gameOverLabel);
+        this.addChild(scoreLabel);
+
+        this.addEventListener(Event.TOUCH_START, this.touchToRestart);
+
+    },
+
+    touchToRestart: function(evt) {
+        var game = Game.instance;
+        game.replaceScene(new SceneGame());
     }
     
 });
