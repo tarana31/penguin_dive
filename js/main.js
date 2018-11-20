@@ -31,6 +31,17 @@ var SceneGame = Class.create(Scene,{
 
         game = Game.instance;  //access to the game singleton instance        
 
+        // Label
+        label = new Label('SCORE<br>0');
+        label.x = 9;
+        label.y = 32;        
+        label.color = 'black';
+        label.font = '16px strong';
+        label.textAlign = 'center';
+        label._style.textShadow ="-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black";
+        this.scoreLabel = label;
+
+
         // add background
         bg = new Sprite(340,440);       //(width,height)
         bg.image = game.assets['res/water.png'];
@@ -47,14 +58,18 @@ var SceneGame = Class.create(Scene,{
         
         //adding items
         this.addChild(bg);             //addChild method means that the node you add will become one of the scene’s child nodes.
-        //this variable refers to the current instance of SceneGame     
+        //this variable refers to the current instance of SceneGame  
+        this.addChild(iceGroup);   
         this.addChild(penguin);
-        
+        this.addChild(label);
+
         this.addEventListener(Event.TOUCH_START,this.handleTouchControl);   // touch listener to move penguin on screen touch
         this.addEventListener(Event.ENTER_FRAME, this.update);      //update
 
         //instance variables
         this.generateIceTimer = 0;
+        this.scoreTimer = 0;        //timer to increase the game score as time passes
+        this.score = 0;             //score variable contains the game score
 
     },
 
@@ -67,6 +82,14 @@ var SceneGame = Class.create(Scene,{
     },
 
     update: function(evt) {
+
+        // Score increase as time passes
+        this.scoreTimer += evt.elapsed * 0.001;
+        if (this.scoreTimer >= 0.5) {
+            this.setScore(this.score + 1);
+            this.scoreTimer -= 0.5;
+        }
+
         // Check if it's time to create a new set of obstacles
         this.generateIceTimer += evt.elapsed * 0.001;
         if (this.generateIceTimer >= 0.5) {
@@ -75,6 +98,23 @@ var SceneGame = Class.create(Scene,{
             ice = new Ice(Math.floor(Math.random()*3));
             this.addChild(ice);
         }
+
+        // Check collision
+        // Group node has a childNodes array that keeps track of all of its children. 
+        //This block of code iterates through each child and checks if it collides with the penguin.
+        for (var i = this.iceGroup.childNodes.length - 1; i >= 0; i--) {
+            var ice;
+            ice = this.iceGroup.childNodes[i];
+            if (ice.intersect(this.penguin)){
+                this.iceGroup.removeChild(ice);        
+                break;
+            }
+        }
+    },
+
+    setScore: function (value) {
+        this.score = value;
+        this.scoreLabel.text = 'SCORE<br>' + this.score;
     }
 });
 
