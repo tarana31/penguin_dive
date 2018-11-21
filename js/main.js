@@ -6,7 +6,9 @@ window.onload = function() {
     var game = new Game(340,440);         //starting point  //instance of Game class
     game.preload('res/water.png',
                 'res/penguinSheet.png',
-                'res/Ice.png');
+                'res/Ice.png',
+                'res/Hit.mp3',
+                'res/bgm.mp3');
 
     //game settings
     game.fps= 30;                //frames per sec
@@ -73,6 +75,9 @@ var SceneGame = Class.create(Scene,{
         this.scoreTimer = 0;        //timer to increase the game score as time passes
         this.score = 0;             //score variable contains the game score
 
+        // Background music
+        this.bgm = game.assets['res/bgm.mp3'];
+        this.bgm.play();
     },
 
     handleTouchControl: function (evt) {
@@ -112,12 +117,18 @@ var SceneGame = Class.create(Scene,{
             if (ice.intersect(this.penguin)){
                 var game;
                 game = Game.instance;
+                game.assets['res/Hit.mp3'].play();
                 this.iceGroup.removeChild(ice);        
                 // this.bgm.stop();
 	            game.replaceScene(new SceneGameOver(this.score));        
                 break;
             }
         }
+        // Loop BGM
+        if (this.bgm.currentTime >= this.bgm.duration ){
+        this.bgm.play();
+}
+
     },
 
     setScore: function (value) {
