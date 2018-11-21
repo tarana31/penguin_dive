@@ -19,6 +19,8 @@ window.onload = function() {
         game.pushScene(scene);
     }
     game.start();
+    window.scrollTo(0, 0);
+
 };
 
 
